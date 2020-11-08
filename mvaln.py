@@ -2,6 +2,7 @@
 import synapseclient
 import subprocess
 import os
+import pandas as pd
 
 chess_s3_bucket = 's3://chesslab-bsmn'
 efs_dirpath = '/efs/alignments'
@@ -26,8 +27,15 @@ def transfer(synID, syn):
         os.remove(e.path)
     return(p)
 
-def transferall(folderID='syn20735395'):
+def getsynIDs(folderID='syn20735395'):
     syn = synapseclient.login()
     folder = syn.get(folderID)
-    ps = [transfer(e['id'], syn) for e in syn.getChildren(folder)]
+    synIDs = [e['id'] for e in syn.getChildren(folder)]
+    names = [e['name'] for e in syn.getChildren(folder)]
+    val = pd.Series(data=synIDs, index=names)
+    return(val)
+
+def transferall(synIDs, syn):
+    l = list(synIDs)
+    ps = [transfer(y, syn) for y in l]
     return(ps)
