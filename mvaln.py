@@ -25,3 +25,9 @@ def transfer(synID, syn):
     if p.returncode == 0:
         os.remove(e.path)
     return(p)
+
+def transferall(folderID='syn20735395'):
+    syn = synapseclient.login()
+    folder = syn.get(folderID)
+    ps = [transfer(e['id'], syn) for e in syn.getChildren(folder)]
+    return(ps)
